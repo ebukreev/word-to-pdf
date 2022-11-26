@@ -1,5 +1,6 @@
 package dev.bukreev.plugins
 
+import dev.bukreev.Converter
 import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -7,7 +8,6 @@ import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.util.*
 
 fun Application.configureRouting() {
     routing {
@@ -19,8 +19,10 @@ fun Application.configureRouting() {
                     val fileBytes = part.streamProvider().readBytes()
 
                     withContext(Dispatchers.IO) {
-                        val file = File.createTempFile(fileName, UUID.randomUUID().toString())
+                        val file = File(fileName)
                         file.writeBytes(fileBytes)
+
+                        val pdfFile = Converter.convertWordToPdf(file)
                     }
                 }
 
