@@ -27,12 +27,17 @@ fun Application.configureRouting() {
                             val wordFile = File(fileName)
                             wordFile.writeBytes(fileBytes)
 
-                            val pdfFile = Converter.convertWordToPdf(wordFile)
+                            try {
+                                val pdfFile = Converter.convertWordToPdf(wordFile)
 
-                            call.respondFile(pdfFile)
+                                call.respondFile(pdfFile)
 
-                            Files.deleteIfExists(wordFile.toPath())
-                            Files.deleteIfExists(pdfFile.toPath())
+                                Files.deleteIfExists(wordFile.toPath())
+                                Files.deleteIfExists(pdfFile.toPath())
+                            } catch (e: IllegalStateException) {
+                                call.respondText("Can't convert uploaded file, try it later",
+                                    status = HttpStatusCode.InternalServerError)
+                            }
                         }
                     } else {
                         call.respondText("Word file expected", status = HttpStatusCode.Forbidden)
