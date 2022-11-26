@@ -17,6 +17,12 @@ application {
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
+ktor {
+    fatJar {
+        archiveFileName.set("converter.jar")
+    }
+}
+
 repositories {
     mavenCentral()
 }
