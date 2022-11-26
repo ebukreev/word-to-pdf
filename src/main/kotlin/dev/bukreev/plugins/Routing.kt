@@ -1,6 +1,8 @@
 package dev.bukreev.plugins
 
 import dev.bukreev.Converter
+import dev.bukreev.utils.isValidWordDocument
+import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -18,18 +20,22 @@ fun Application.configureRouting() {
                 if (part is PartData.FileItem) {
                     val fileName = part.originalFileName as String
 
-                    val fileBytes = part.streamProvider().readBytes()
+                    if (fileName.isValidWordDocument()) {
+                        val fileBytes = part.streamProvider().readBytes()
 
-                    withContext(Dispatchers.IO) {
-                        val wordFile = File(fileName)
-                        wordFile.writeBytes(fileBytes)
+                        withContext(Dispatchers.IO) {
+                            val wordFile = File(fileName)
+                            wordFile.writeBytes(fileBytes)
 
-                        val pdfFile = Converter.convertWordToPdf(wordFile)
+                            val pdfFile = Converter.convertWordToPdf(wordFile)
 
-                        call.respondFile(pdfFile)
+                            call.respondFile(pdfFile)
 
-                        Files.deleteIfExists(wordFile.toPath())
-                        Files.deleteIfExists(pdfFile.toPath())
+                            Files.deleteIfExists(wordFile.toPath())
+                            Files.deleteIfExists(pdfFile.toPath())
+                        }
+                    } else {
+                        call.respondText("Word file expected", status = HttpStatusCode.Forbidden)
                     }
                 }
 
