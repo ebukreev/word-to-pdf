@@ -30,6 +30,8 @@ fun Application.configureRouting() {
                             try {
                                 val pdfFile = Converter.convertWordToPdf(wordFile)
 
+                                call.response.header("Content-Disposition",
+                                    "attachment; filename=\"${pdfFile.name}\"")
                                 call.respondFile(pdfFile)
 
                                 Files.deleteIfExists(wordFile.toPath())
