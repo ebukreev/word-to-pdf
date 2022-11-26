@@ -4,10 +4,12 @@ import dev.bukreev.Converter
 import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.nio.file.Files
 
 fun Application.configureRouting() {
     routing {
@@ -19,10 +21,15 @@ fun Application.configureRouting() {
                     val fileBytes = part.streamProvider().readBytes()
 
                     withContext(Dispatchers.IO) {
-                        val file = File(fileName)
-                        file.writeBytes(fileBytes)
+                        val wordFile = File(fileName)
+                        wordFile.writeBytes(fileBytes)
 
-                        val pdfFile = Converter.convertWordToPdf(file)
+                        val pdfFile = Converter.convertWordToPdf(wordFile)
+
+                        call.respondFile(pdfFile)
+
+                        Files.deleteIfExists(wordFile.toPath())
+                        Files.deleteIfExists(pdfFile.toPath())
                     }
                 }
 
