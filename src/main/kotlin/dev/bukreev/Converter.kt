@@ -8,7 +8,9 @@ object Converter {
         val process =
             Runtime.getRuntime().exec("libreoffice --convert-to pdf ${wordFile.absolutePath}")
 
-        process.waitFor()
+        if (process.waitFor() != 0) {
+            throw IllegalStateException()
+        }
 
         return File(wordFile.absolutePath.replaceAfterLast('.', "pdf"))
     }
