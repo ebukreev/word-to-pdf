@@ -1,4 +1,7 @@
 # word-to-pdf
+
+[![Testing](https://github.com/ebukreev/word-to-pdf/actions/workflows/testing.yml/badge.svg?branch=master)](https://github.com/ebukreev/word-to-pdf/actions/workflows/testing.yml)
+
 Software Engineering 2022 labs
 
 Simple service that takes .doc or .docx file with HTTP POST request Multipart body and return that file but converted to pdf.
